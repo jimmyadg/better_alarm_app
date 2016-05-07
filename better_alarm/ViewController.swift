@@ -14,7 +14,7 @@ var strDate : String = ""
 var now : String = ""
 var counter :Int = 0
 
-var On : Bool = false
+var On :Int = Int() //button logic operator
 
 
 var caseState = 0
@@ -58,10 +58,11 @@ class ViewController: UIViewController{
     @IBAction func button(sender: UIButton) {
         AudioServicesPlaySystemSound (systemSoundID)
         
-        if(caseState == 0){
-            On = true
+        if(caseState == 0 ){
+            On++
             dateLabel.text = "New Alarm: \(datePickerChanged(datePicker))"
             print(dateLabel.text)
+           
             
         }else if(caseState == 1 && counter>0){
             if(answerStr == answers[qnum]){
@@ -69,7 +70,8 @@ class ViewController: UIViewController{
             }
             
         }
-        
+        // print(On) //debug
+        //print(caseState) //debug
     }
     
     
@@ -79,8 +81,12 @@ class ViewController: UIViewController{
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        datePicker.setValue(UIColor.whiteColor(), forKeyPath: "textColor")
+        datePicker.datePickerMode = .CountDownTimer
+        datePicker.datePickerMode = .Time
         dateLabel.hidden = true
         NSTimer.scheduledTimerWithTimeInterval(0.1, target: self, selector: Selector("updateTime"), userInfo: nil, repeats: true)
+        
     }
     
     
@@ -115,11 +121,15 @@ class ViewController: UIViewController{
             //sec = 0.1
             now = NSDateFormatter.localizedStringFromDate(NSDate(), dateStyle: NSDateFormatterStyle.NoStyle, timeStyle: NSDateFormatterStyle.ShortStyle)
             
-            if(On == true){
+            if(On%2 != 0){
+                if(On%2 == 0) {
+                    caseState = 4
+                }
                 createTitle.hidden = true
                 dateLabel.hidden = false
                 datePicker.hidden = true
-                buttonDis.hidden = true
+                //buttonDis.hidden = true
+                buttonDis.setTitle("Cancel", forState: .Normal)
                 if(now == strDate){
                     dateLabel.text = "\(questions[qnum]) = "
                     caseState = 1
@@ -132,7 +142,7 @@ class ViewController: UIViewController{
         case 1:
             buttonDis.hidden = false
             answer.hidden = false
-            On = false
+            On = 0
             buttonDis.setTitle("Submit",forState: .Normal)
             countDis.hidden = false
             countDis.text = "\(counter/10)"
@@ -166,6 +176,10 @@ class ViewController: UIViewController{
             self.photo.image = UIImage(named:"punish") //punishment image
             caseState = 0
             
+            break;
+            
+        case 4:
+            caseState = 0
             break;
             
             
